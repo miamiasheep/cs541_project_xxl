@@ -29,7 +29,9 @@ import java.io.*;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 import xxl.core.collections.containers.Container;
 import xxl.core.collections.containers.CounterContainer;
@@ -260,7 +262,20 @@ public class SimpleHilbertRTreeTest {
 		/*********************************************************************/
 		/*                         INSERT RANDOM DATA                        */
 		/*********************************************************************/
-		System.out.println("Insert random data: ");
+		// Read file from usa_data.txt
+		List<double []> points  = new ArrayList<double[]>();
+		File myFile = new File("usa_data.txt");
+		Scanner myReader = new Scanner(myFile);
+		while(myReader.hasNextLine()){
+			String line = myReader.nextLine();
+			String[] arrOfStr = line.split(" ", 2);
+			double[] point = new double[2];
+			point[0] = Double.parseDouble(arrOfStr[0]);
+			point[1] = Double.parseDouble(arrOfStr[1]);
+			points.add(point);
+		}
+		myReader.close();
+		System.out.println("Insert usa data: ");
 		Random random = new Random(42);
 		int iters = 7000;
 		int splitCount = 0;
