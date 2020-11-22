@@ -243,58 +243,32 @@ public class SimpleHilbertRTreeTest {
 		String treePath = filename;
 		int indexCount;
 		int leafCount;
-		if (!reopen){
-			System.out.println("Init new HilbertRTree");
-			fileContainer = new CounterContainer(
-					new BlockFileContainer(treePath, blockSize));
-			treeContainer = new   BufferedContainer(new ConverterContainer
-					(fileContainer,   tree.nodeConverter()),
-					new LRUBuffer(bufferSize), false);
-			tree.initialize(getHilbertValue , getEntryMBR,
-					 	treeContainer,
-						keyConverter,
-						dataConverter,
-						createORSeparator,
-						createORKeyRange);
-			indexCount = tree.getIndexNodeB();
-			leafCount = tree.getLeafNodeB();
-		} else{
-			System.out.println("Load and Init persistent HilbertRTree");
-			fileContainer = new CounterContainer(
-					new BlockFileContainer(treePath));
-			treeContainer = new   BufferedContainer(new ConverterContainer
-					( fileContainer,   tree.nodeConverter()),
-					new LRUBuffer(bufferSize), false);
-			File parameters = new File(treePath+"_params.dat");
-			DataInputStream dos = new DataInputStream(new FileInputStream(parameters));
-			long rootsPageId = LongConverter.DEFAULT_INSTANCE.read(dos);
-			int height = IntegerConverter.DEFAULT_INSTANCE.read(dos);
-			Long minBound = (Long)keyConverter.read(dos);
-			Long maxBound = (Long)keyConverter.read(dos);
-			DoublePointRectangle mbr = (DoublePointRectangle)
-				ConvertableConverter.DEFAULT_INSTANCE.read(dos, new DoublePointRectangle(dimension));
-			BPlusTree.IndexEntry rootEntry = ((BPlusTree.IndexEntry)tree.createIndexEntry(height)).initialize
-					(rootsPageId, new DoublePointRectangleSep(minBound, mbr));
-			tree.initialize(rootEntry, new LongRange(minBound, maxBound, mbr),
-					getHilbertValue, getEntryMBR, treeContainer,
-					keyConverter, dataConverter,
-					createORSeparator, createORKeyRange);
-			indexCount = tree.getIndexNodeB();
-			leafCount = tree.getLeafNodeB();
-		}
+		System.out.println("Init new HilbertRTree");
+		fileContainer = new CounterContainer(
+				new BlockFileContainer(treePath, blockSize));
+		treeContainer = new   BufferedContainer(new ConverterContainer
+				(fileContainer,   tree.nodeConverter()),
+				new LRUBuffer(bufferSize), false);
+		tree.initialize(getHilbertValue , getEntryMBR,
+					treeContainer,
+					keyConverter,
+					dataConverter,
+					createORSeparator,
+					createORKeyRange);
+		indexCount = tree.getIndexNodeB();
+		leafCount = tree.getLeafNodeB();
 		/*********************************************************************/
 		/*                         INSERT RANDOM DATA                        */
 		/*********************************************************************/
-		if (!reopen){
 		System.out.println("Insert random data: ");
 		Random random = new Random(42);
 		int iters = 7000;
 		int splitCount = 0;
-		PrintWriter fw = new PrintWriter("1_3_319.txt");
-		for (int j=0; j<iters; j++) {
+		PrintWriter fw = new PrintWriter(filename + ".txt");
+		for (int j = 0; j < iters; j++) {
 			System.out.println(j);
 			splitCount = 0;
-			for(int k = 0; k < 10000; k++) {
+			for (int k = 0; k < 10000; k++) {
 				// create random coordinates
 				double[] point = new double[dimension];
 				for (int i = 0; i < dimension; i++)
@@ -307,18 +281,8 @@ public class SimpleHilbertRTreeTest {
 			fw.flush();
 			System.out.println(splitCount);
 		}
-			System.out.print("100%\n");
-			System.out.println(splitCount);
-		}
-
-		/*********************************************************************/
-		/*                     Save HilbertRTree		                     */
-		/*********************************************************************/
-		if (!reopen){
-			//saveParams(tree, filename+"_params.dat", keyConverter );
-		}
-
-
+		System.out.print("100%\n");
+		System.out.println(splitCount);
 	}
 
 }
