@@ -66,11 +66,11 @@ import xxl.core.spatial.rectangles.Rectangle;
  */
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
-	static public double minMaxFactor = 1d/2d;
+	static public double minMaxFactor = 1d/3d;
 	/**Dimension */
 	static public final int dimension = 2;
 	/**Block size */
-	static public final int blockSize = 1536;
+	static public final int blockSize = 15360;
 	/**Buffer size*/
 	static public final int bufferSize = 20;
 	/**Precision of the Hilbert Space filling curve*/
@@ -232,7 +232,7 @@ public class SimpleHilbertRTreeTest {
 		if (args.length!=1) 
 			System.out.println("usage: java SimpleRTreeTest filename");
 		// test if RTree exists
-		String filename = "5_6_utility";
+		String filename = "1_3_319";
 		boolean reopen = (new File(filename+".ctr")).canRead();
 		HilbertRTree tree = new HilbertRTree(blockSize, universe, minMaxFactor);
 		Container fileContainer = null;
@@ -241,6 +241,8 @@ public class SimpleHilbertRTreeTest {
 		/*                       INIT HILBERT TREE                           */
 		/*********************************************************************/
 		String treePath = filename;
+		int indexCount;
+		int leafCount;
 		if (!reopen){
 			System.out.println("Init new HilbertRTree");
 			fileContainer = new CounterContainer(
@@ -254,6 +256,8 @@ public class SimpleHilbertRTreeTest {
 						dataConverter,
 						createORSeparator,
 						createORKeyRange);
+			indexCount = tree.getIndexNodeB();
+			leafCount = tree.getLeafNodeB();
 		} else{
 			System.out.println("Load and Init persistent HilbertRTree");
 			fileContainer = new CounterContainer(
@@ -275,6 +279,8 @@ public class SimpleHilbertRTreeTest {
 					getHilbertValue, getEntryMBR, treeContainer,
 					keyConverter, dataConverter,
 					createORSeparator, createORKeyRange);
+			indexCount = tree.getIndexNodeB();
+			leafCount = tree.getLeafNodeB();
 		}
 		/*********************************************************************/
 		/*                         INSERT RANDOM DATA                        */
@@ -282,9 +288,9 @@ public class SimpleHilbertRTreeTest {
 		if (!reopen){
 		System.out.println("Insert random data: ");
 		Random random = new Random(42);
-		int iters = 10000;
+		int iters = 7000;
 		int splitCount = 0;
-		PrintWriter fw = new PrintWriter("1_2_utility.txt");
+		PrintWriter fw = new PrintWriter("1_3_319.txt");
 		for (int j=0; j<iters; j++) {
 			System.out.println(j);
 			splitCount = 0;
