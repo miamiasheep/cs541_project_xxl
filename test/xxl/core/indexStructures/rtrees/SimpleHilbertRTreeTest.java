@@ -68,7 +68,7 @@ import xxl.core.spatial.rectangles.Rectangle;
  */
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
-	static public double minMaxFactor = 1d/3d;
+	static public double minMaxFactor = 1d/2d;
 	/**Dimension */
 	static public final int dimension = 2;
 	/**Block size */
@@ -81,7 +81,7 @@ public class SimpleHilbertRTreeTest {
 	 * ( DoublePoints uniformly distributed in rectangle with xmin = 0 , ymin = 0, xmax = 1 , ymax = 1)
 	 */
 	static public final DoublePointRectangle universe = new DoublePointRectangle(new double[]{0,0},
-			new double[]{1.0,1.0});
+			new double[]{120.0, 90.0});
 	/**
 	 * Converter for the keys of the data. Keys are the java.long values(hilbert values of the MBRs middle points).   
 	 */
@@ -234,7 +234,7 @@ public class SimpleHilbertRTreeTest {
 		if (args.length!=1) 
 			System.out.println("usage: java SimpleRTreeTest filename");
 		// test if RTree exists
-		String filename = "1_3_319";
+		String filename = "1_2_usa_data_shuffle";
 		boolean reopen = (new File(filename+".ctr")).canRead();
 		HilbertRTree tree = new HilbertRTree(blockSize, universe, minMaxFactor);
 		Container fileContainer = null;
@@ -264,31 +264,41 @@ public class SimpleHilbertRTreeTest {
 		/*********************************************************************/
 		// Read file from usa_data.txt
 		List<double []> points  = new ArrayList<double[]>();
-		File myFile = new File("usa_data.txt");
+		File myFile = new File("usa_data_shuffle.txt");
 		Scanner myReader = new Scanner(myFile);
 		while(myReader.hasNextLine()){
 			String line = myReader.nextLine();
 			String[] arrOfStr = line.split(" ", 2);
 			double[] point = new double[2];
-			point[0] = Double.parseDouble(arrOfStr[0]);
+			point[0] = Double.parseDouble(arrOfStr[0]) + 177;
 			point[1] = Double.parseDouble(arrOfStr[1]);
 			points.add(point);
+			// System.out.println(point[0]);
+			// System.out.println(point[1]);
 		}
 		myReader.close();
 		System.out.println("Insert usa data: ");
 		Random random = new Random(42);
 		int iters = 7000;
 		int splitCount = 0;
+		int indexPoint = 0;
 		PrintWriter fw = new PrintWriter(filename + ".txt");
+		// rewrite this part
+
 		for (int j = 0; j < iters; j++) {
 			System.out.println(j);
 			splitCount = 0;
 			for (int k = 0; k < 10000; k++) {
 				// create random coordinates
 				double[] point = new double[dimension];
-				for (int i = 0; i < dimension; i++)
-					point[i] = random.nextDouble();
+				for (int i = 0; i < dimension; i++) {
+					// 0.001 degree is about 100 meter. Sounds reasonable.
+					point[i] = random.nextDouble() * 0.001;
+					point[i] += points.get(indexPoint)[i];
+				}
+
 				// insert new point
+				indexPoint = (indexPoint + 1) % points.size();
 				tree.insert(new DoublePoint(point));
 				splitCount += tree.splitCount;
 			}
