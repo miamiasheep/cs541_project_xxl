@@ -68,7 +68,7 @@ import xxl.core.spatial.rectangles.Rectangle;
  */
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
-	static public double minMaxFactor = 1d/2d;
+	static public double minMaxFactor = 2d/3d;
 	/**Dimension */
 	static public final int dimension = 2;
 	/**Block size */
@@ -234,7 +234,7 @@ public class SimpleHilbertRTreeTest {
 		if (args.length!=1) 
 			System.out.println("usage: java SimpleRTreeTest filename");
 		// test if RTree exists
-		String filename = "1_2_usa_data_shuffle";
+		String filename = "2_3_usa_data_shuffle";
 		boolean reopen = (new File(filename+".ctr")).canRead();
 		HilbertRTree tree = new HilbertRTree(blockSize, universe, minMaxFactor);
 		Container fileContainer = null;
