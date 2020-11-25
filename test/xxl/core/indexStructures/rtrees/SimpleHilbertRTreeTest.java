@@ -68,7 +68,7 @@ import xxl.core.spatial.rectangles.Rectangle;
  */
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
-	static public double minMaxFactor = 2d/3d;
+	static public double minMaxFactor = 5d/6d;
 	/**Dimension */
 	static public final int dimension = 2;
 	/**Block size */
@@ -234,7 +234,7 @@ public class SimpleHilbertRTreeTest {
 		if (args.length!=1) 
 			System.out.println("usage: java SimpleRTreeTest filename");
 		// test if RTree exists
-		String filename = "2_3_usa_data_shuffle";
+		String filename = "5_6_usa_data_shuffle";
 		boolean reopen = (new File(filename+".ctr")).canRead();
 		HilbertRTree tree = new HilbertRTree(blockSize, universe, minMaxFactor);
 		Container fileContainer = null;
@@ -279,12 +279,12 @@ public class SimpleHilbertRTreeTest {
 		myReader.close();
 		System.out.println("Insert usa data: ");
 		Random random = new Random(42);
-		int iters = 7000;
+		int iters = 1000;
 		int splitCount = 0;
 		int indexPoint = 0;
+		List<double[]> pointsQuery = new ArrayList<double[]>();
+		double[] pointQuery = new double[dimension];
 		PrintWriter fw = new PrintWriter(filename + ".txt");
-		// rewrite this part
-
 		for (int j = 0; j < iters; j++) {
 			System.out.println(j);
 			splitCount = 0;
@@ -301,6 +301,9 @@ public class SimpleHilbertRTreeTest {
 				indexPoint = (indexPoint + 1) % points.size();
 				tree.insert(new DoublePoint(point));
 				splitCount += tree.splitCount;
+				if (k % 100 == 0){
+					pointsQuery.add(point);
+				}
 			}
 			fw.printf("%d\n", splitCount);
 			fw.flush();
@@ -308,6 +311,38 @@ public class SimpleHilbertRTreeTest {
 		}
 		System.out.print("100%\n");
 		System.out.println(splitCount);
+		/******* Range Query *******/
+		System.out.println("Range Queries");
+		double [] leftCorner = new double[dimension];
+		double [] rightCorner = new double[dimension];
+		List<DoublePointRectangle> queries = new ArrayList<DoublePointRectangle>();
+		iters = iters * 100;
+		for(int i = 0; i < iters; i ++)
+		{
+			leftCorner = new double[dimension];
+			rightCorner = new double[dimension];
+			for(int j = 0; j < dimension; j ++)
+			{
+				leftCorner[j] = pointsQuery.get(i)[j];
+				rightCorner[j] = pointsQuery.get(i)[j];
+			}
+			queries.add(new DoublePointRectangle(leftCorner, rightCorner));
+		}
+		// perform  query
+		double nanoToSeconds = 1000 * 1000 * 1000;
+		Cursor results;
+		for(int k = 0; k < 10; k ++)
+		{
+			long start = System.nanoTime();
+			for(int i = 0;i < iters; i++)
+			{
+				results = tree.queryOR(queries.get(i), 0);
+				results.next();
+			}
+			long end = System.nanoTime();
+			System.out.println((end - start) / nanoToSeconds);
+		}
+
 	}
 
 }
