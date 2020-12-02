@@ -69,7 +69,7 @@ import xxl.core.spatial.rectangles.Rectangle;
  */
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
-	static public double minMaxFactor = 2d/3d;
+	static public double minMaxFactor = 1d/2d;
 	/**Dimension */
 	static public final int dimension = 2;
 	/**Block size */
@@ -235,7 +235,7 @@ public class SimpleHilbertRTreeTest {
 		if (args.length!=1) 
 			System.out.println("usage: java SimpleRTreeTest filename");
 		// test if RTree exists
-		String filename = "1_3_319";
+		String filename = "1_2";
 		boolean reopen = (new File(filename+".ctr")).canRead();
 		HilbertRTree tree = new HilbertRTree(blockSize, universe, minMaxFactor);
 		Container fileContainer = null;
@@ -265,32 +265,43 @@ public class SimpleHilbertRTreeTest {
 		/*********************************************************************/
 		System.out.println("Insert random data: ");
 		Random random = new Random(42);
-		int iters = 1000;
+		int iters = 7000;
 		int splitCount = 0;
+		double nanoToSeconds = 1000 * 1000 * 1000;
 		List<double[]> points = new ArrayList<double[]>();
 		double[] pointQuery = new double[dimension];
 		PrintWriter fw = new PrintWriter(filename + ".txt");
+		PrintWriter fwTime = new PrintWriter(filename + "_time.txt");
 		double[] point = new double[dimension];
+		long start = System.nanoTime();
+		long end = System.nanoTime();
+		double duration = 0;
 		for (int j = 0; j < iters; j++) {
 			System.out.println(j);
 			splitCount = 0;
+			duration = 0;
 			for (int k = 0; k < 10000; k++) {
 				point = new double[dimension];
 				for (int i = 0; i < dimension; i++)
 				{
 					point[i] = random.nextDouble();
 				}
-
 				// insert new point
+				start = System.nanoTime();
 				tree.insert(new DoublePoint(point));
+				end = System.nanoTime();
+				duration += (end - start);
 				splitCount += tree.splitCount;
 				if(k % 100 == 0){
 					points.add(point);
 				}
 			}
 			fw.printf("%d\n", splitCount);
+			fwTime.printf("%f\n", duration/nanoToSeconds);
 			fw.flush();
+			fwTime.flush();
 			System.out.println(splitCount);
+			System.out.println(duration/nanoToSeconds);
 		}
 
 		/******* Range Query *******/
@@ -311,17 +322,17 @@ public class SimpleHilbertRTreeTest {
 			queries.add(new DoublePointRectangle(leftCorner, rightCorner));
 		}
 		// perform  query
-		double nanoToSeconds = 1000 * 1000 * 1000;
+
 		Cursor results;
 		for(int k = 0; k < 10; k ++)
 		{
-			long start = System.nanoTime();
+			start = System.nanoTime();
 			for(int i = 0;i < iters; i++)
 			{
 				results = tree.queryOR(queries.get(i), 0);
 				results.next();
 			}
-			long end = System.nanoTime();
+			end = System.nanoTime();
 			System.out.println((end - start) / nanoToSeconds);
 		}
 
