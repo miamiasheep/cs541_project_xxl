@@ -70,7 +70,7 @@ import xxl.core.spatial.rectangles.Rectangle;
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
 	// When it is larger than 1/2 -> fixed split
-	// When it is smaller than 1/2 -> split with fixed proportion
+	// When it is smaller than 1/2 -> split with fixed proportion (ex: 1/3 means split with 1/3 ~ 2/3)
 	static public double minMaxFactor = 1d/2d;
 	/** **/
 	static public int iters = 10;
