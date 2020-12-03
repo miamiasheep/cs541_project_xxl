@@ -69,7 +69,12 @@ import xxl.core.spatial.rectangles.Rectangle;
  */
 public class SimpleHilbertRTreeTest {
 	/**MinMaxFactor*/
+	// When it is larger than 1/2 -> fixed split
+	// When it is smaller than 1/2 -> split with fixed proportion
 	static public double minMaxFactor = 1d/2d;
+	/** **/
+	static public int iters = 10;
+
 	/**Dimension */
 	static public final int dimension = 2;
 	/**Block size */
@@ -235,7 +240,7 @@ public class SimpleHilbertRTreeTest {
 		if (args.length!=1) 
 			System.out.println("usage: java SimpleRTreeTest filename");
 		// test if RTree exists
-		String filename = "1_2";
+		String filename = "splitCount";
 		boolean reopen = (new File(filename+".ctr")).canRead();
 		HilbertRTree tree = new HilbertRTree(blockSize, universe, minMaxFactor);
 		Container fileContainer = null;
@@ -265,7 +270,7 @@ public class SimpleHilbertRTreeTest {
 		/*********************************************************************/
 		System.out.println("Insert random data: ");
 		Random random = new Random(42);
-		int iters = 7000;
+		int iters = SimpleHilbertRTreeTest.iters;
 		int splitCount = 0;
 		double nanoToSeconds = 1000 * 1000 * 1000;
 		List<double[]> points = new ArrayList<double[]>();
