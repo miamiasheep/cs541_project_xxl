@@ -71,7 +71,7 @@ public class SimpleHilbertRTreeTest {
 	// When it is larger than 1/2, it means the fixed proportion cut.
 	// When it is smaller than 1/2, it means cut within proportion.
 	static public double minMaxFactor = 1d/2d;
-	/* iterations */
+	/** iterations **/
 	static public int iters = 20;
 
 	/**Dimension */
